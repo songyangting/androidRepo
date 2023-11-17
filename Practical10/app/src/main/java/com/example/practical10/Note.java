@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "notes")
 public class Note {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     int id;
     private String title;
     private String content;
@@ -14,8 +14,7 @@ public class Note {
     public Note() {
     }
 
-    public Note(int id, String title, String content) {
-        this.id = id;
+    public Note(String title, String content) {
         this.title = title;
         this.content = content;
     }

@@ -1,6 +1,8 @@
 package com.example.practical10;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,47 +20,74 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
 
     List<Note> noteList = new ArrayList<Note>();
     Context context;
-    NoteDatabase noteDatabase;
+    NoteDao noteDao;
     ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    private View recyclerView;
+    private View emptyView;
 
     public MyAdapter(List<Note> noteList, Context context) {
         this.noteList = noteList;
         this.context = context;
     }
 
+
+    // constructor that takes in the noteDao meaning we have access to the db
+    public MyAdapter(NoteDao noteDao, View recyclerView, View emptyView) {
+        this.noteDao = noteDao;
+        this.recyclerView = recyclerView;
+        this.emptyView = emptyView;
+        showEmptyView();
+    }
+
+    private void showEmptyView() {
+        if (noteList.size() == 0){
+            // no notes
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+        }
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = View.inflate(parent.getContext(), R.layout.notes_item, parent);
+//        View view = View.inflate(parent.getContext(), R.layout.notes_item, parent);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notes_item, parent, false);
 
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (noteList.isEmpty()) {
-            holder.titleTxt.setText("Notes Title");
-            holder.contentTxt.setText("Set up your notes content!");
-        } else {
-            holder.getTitleTxt().setText(noteList.get(position).getContent());
-            holder.getContentTxt().setText(noteList.get(position).getTitle());
+        Note currentNote = noteList.get(position);
 
-            holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int adapterPosition = holder.getAdapterPosition();
-                    int noteId = noteList.get(adapterPosition).id;
-                    executorService.execute(new DeleteNoteRunnable(noteId));
+        holder.getTitleTxt().setText(currentNote.getTitle());
+        holder.getContentTxt().setText(currentNote.getContent());
 
-                }
-            });
+        holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int noteId = currentNote.id;
+                Log.i("Note ID", ""+noteId);
+                executorService.execute(new DeleteNoteRunnable(noteId));
 
-        }
+            }
+
+        });
     }
 
     @Override
     public int getItemCount() {
         return noteList.size();
+    }
+
+    public void setNote(List<Note> noteList) {
+        this.noteList = noteList;
+        showEmptyView();
+        notifyDataSetChanged(); //important to have this
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -89,30 +118,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
             this.noteId = noteId;
         }
 
-
         @Override
         public void run() {
-            Note note = noteDatabase.noteDao().getNoteById(noteId);
-            noteDatabase.noteDao().delete(note);
+            //Log.i("Note ID", ""+noteId);
+            Note note = noteDao.getNoteById(noteId);
+            //Log.i("Note", "Note title: "+ note.getTitle()+", Note content: "+ note.getContent());
+            noteDao.delete(note);
         }
     }
 
-//    private class DisplayNoteRunnable implements Runnable {
-//        private final int noteId;
-//
-//        DisplayNoteRunnable(int noteId) {
-//            this.noteId = noteId;
-//        }
-//
-//        @Override
-//        public void run() {
-//            Note note = noteDatabase.noteDao().getNoteById(noteId);
-//            if (note != null) {
-//                // display note
-//
-//            } else {
-//                // set default values for title and content
-//            }
-//        }
-//    }
 }
