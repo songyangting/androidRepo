@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "191531630686",
+    "firebase_url": "https://kotlinpractical13-a8d50-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "kotlinpractical13-a8d50",
+    "storage_bucket": "kotlinpractical13-a8d50.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191531630686:android:3f4ae58ede763b35a0f4cf",
+        "android_client_info": {
+          "package_name": "com.example.kotlinpractical13"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALFqryKcr8pD8_VE52GOriNpTzqByVzo0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
