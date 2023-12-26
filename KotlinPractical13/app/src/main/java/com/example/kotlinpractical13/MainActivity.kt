@@ -1,9 +1,12 @@
 package com.example.kotlinpractical13
 
+import android.content.ContentValues
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract.Data
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import com.example.kotlinpractical13.ui.theme.KotlinPractical13Theme
 import com.google.firebase.Firebase
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -55,7 +60,7 @@ class MainActivity : ComponentActivity() {
                     val database = Firebase.database
                     val notesRef = database.getReference("notes")
 
-                    MainScreen(notesRef)
+                    MainScreen(LocalContext.current, notesRef)
                 }
             }
         }
@@ -64,33 +69,51 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun MainScreen(notesRef : DatabaseReference) {
+fun MainScreen(context: Context, notesRef : DatabaseReference) {
 
     var titleTxt by remember{ mutableStateOf("") }
     var contentTxt by remember{ mutableStateOf("") }
 
-    val noteList = mutableListOf<Note>()
+    var noteList = remember {mutableStateListOf<Note>()}
 
-    notesRef.addValueEventListener(object: ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            for (note in snapshot.children) {
-                val noteObj: Note? = note.getValue(Note::class.java)
-                noteObj?.noteId = note.key
+    notesRef.addChildEventListener(object: ChildEventListener {
+        override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
 
-                noteObj?.let {
-                    noteList.add(it)
-                    println(it)
+            // dataSnapshot contains data for the new child
+            val newNote = snapshot.getValue(Note::class.java)
+            if (newNote != null) {
+                newNote.noteId = snapshot.key
+
+                //Log.d("new note", newNote.toString())
+
+                // why is there an infinite loop of adding new note without this line?????
+                val existingNote = noteList.firstOrNull {it.noteId == snapshot.key}
+
+                if (existingNote == null) {
+                    noteList.add(0, newNote)
                 }
             }
+        }
 
+        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onChildRemoved(snapshot: DataSnapshot) {
+            noteList.removeIf { it.noteId == snapshot.key }
+        }
+
+        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            TODO("Not yet implemented")
         }
 
         override fun onCancelled(error: DatabaseError) {
             // Failed to read value
-            Log.w(TAG, "Failed to read value.", error.toException())
+            Log.w(ContentValues.TAG, "Failed to read value.", error.toException())
         }
 
     })
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -121,12 +144,13 @@ fun MainScreen(notesRef : DatabaseReference) {
         Button(
             onClick = {
                 // save note to database
-                val note = Note(titleTxt, contentTxt)
+                val note = Note(title = titleTxt, content = contentTxt)
                 val newNote = notesRef.push()
                 newNote.setValue(note)
 
                 // set key for note item
-                newNote.key?.let { note.noteId = it }
+                note.noteId = newNote.key.toString()
+               // Log.d("note item", note.toString())
 
                 titleTxt = ""
                 contentTxt = ""
@@ -154,6 +178,7 @@ fun MainScreen(notesRef : DatabaseReference) {
 
             Button(
                 onClick = {
+                    Toast.makeText(context,"Nothing to delete", Toast.LENGTH_SHORT ).show()
                 }
             ) {
                 Row(
