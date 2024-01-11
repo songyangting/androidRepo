@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="deploymentTargetDropDown">
+    <value>
+      <entry key="ButtonClickTest">
+        <State />
+      </entry>
+      <entry key="LazyColumnScrollTest">
+        <State />
+      </entry>
+      <entry key="TextDisplayTest">
+        <State />
+      </entry>
+      <entry key="app">
+        <State />
+      </entry>
+      <entry key="item100VisibleAfterScrolling()">
+        <State />
+      </entry>
+      <entry key="item50VisibleAfterScrolling()">
+        <State />
+      </entry>
+    </value>
+  </component>
+</project>
