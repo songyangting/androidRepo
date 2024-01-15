@@ -2,7 +2,7 @@
 Mobile Application Development Track (Android)
 
 
-### Main Concepts being used
+### Main Concepts being used <br/>
 
 <b> Java and views </b>
 Practical 1 - Event Handling (Click event) <br/>
@@ -19,7 +19,7 @@ Practical 11 - Firebase<br/>
 Practical 12 - APIs<br/>
 Practical 13 - On Device ML<br/>
 
-<b> Kotlin and Compose </b>
+<b> Kotlin and Compose </b> <br/>
 KotlinPractical 3 - Compose Lifecycle<br/>
 KotlinPractical 4 - Audio and Image<br/>
 KotlinPractical 5 - Event Handler (Tic Tac Toe)<br/>
