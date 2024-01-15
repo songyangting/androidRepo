@@ -4,7 +4,7 @@ Mobile Application Development Track (Android)
 
 ### Main Concepts being used <br/>
 
-<b> Java and views </b>
+<b> Java and views </b><br/>
 Practical 1 - Event Handling (Click event) <br/>
 Practical 2 - Simple Counter (Event handling) <br/>
 Practical 3 - MediaPlayer <br/>
